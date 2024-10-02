@@ -1,9 +1,11 @@
-Dacris Maestro Framework
+# Dacris Maestro Framework
+
 Executable Configuration: A Flexible Framework for Automation
 ---
 Copyright (C) 2024 Dacris Software Inc. www.dacris.com
 
-1. Primary Design Goals
+## 1. Primary Design Goals
+
 The primary feature we are trying to implement is to create a .NET framework that can run automated workflows as configuration.
 The configuration will be persisted as JSON.
 The configuration consists of two parts: an executable Logic App, and a state.
@@ -13,7 +15,8 @@ Interactions are defined in .NET assemblies as classes inheriting the base type 
 However, some interactions can be defined as other types of executable code, provided that they are wrapped in a .NET class.
 The ultimate goal is to assemble the interactions into one Logic App that is entirely composed of configurable JSON for its business logic.
 
-2. Benefits
+## 2. Benefits
+
 The key benefits of this approach to software development are:
 - Visibility - Nothing is hidden, everything can be audited, including the business logic.
 - Flexibility - The business logic can be changed in many ways without recompiling code.
@@ -25,7 +28,8 @@ The key benefits of this approach to software development are:
 - Abstraction - Being implementation-agnostic, Logic Apps can be deployed onto any compatible framework that can run them, on any system, on any platform.
 - Simplicity - No need to employ an entire IT department, because Logic Apps are designed to be understandable by non-developers.
 
-3. Integration
+## 3. Integration
+
 By creating custom interaction libraries, developers can infinitely extend this framework.
 Dacris Software provides core interactions. Third parties are encouraged to build their own interaction libraries.
 Each interaction is basically a wrapper around a particular operation in a particular system.
@@ -34,26 +38,12 @@ Each Statement is a call to execute an Interaction or another Block. The interac
 Thus, an interaction is a micro-program. A Logic App is therefore a tree structure of Statements.
 A serializable global state is provided, where each interaction can read/write data as JSON.
 
-4. Execution
+## 4. Execution
+
 A Logic App can be executed in any C# program or class library, using a simple snippet of a couple of lines of code.
 It can also be executed at the command line using the LogicAppRunner.
 
-5. Provided in the Core Package
-- Dacris Maestro framework (.dll binaries, for Windows or for Linux)
-- LogicAppRunner source code
-- SampleLogicApp source code
-- Dacris Maestro Assembler IDE Trial Version
-- Readme
-- Interaction Reference
+## 5. Questions to be Answered in Version 1.2+
 
-6. Building
-Required: .NET 8.0 SDK
-At the command line, run "dotnet build LogicAppRunner.sln".
-The build output will be in (Application)/bin/.
-
-To create your own C# projects using Dacris.Maestro.dll, you should add the DLL as a reference,
-plus all required Nuget packages (see LogicAppRunner.csproj).
-
-7. Questions to be Answered in Version 1.2+
 - How do we debug a logic app?
 - Can interactions be implemented in other languages, e.g. Java or Scala or Python or JavaScript?
