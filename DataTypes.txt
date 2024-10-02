@@ -1,0 +1,16 @@
+General rules for Maestro data types:
+
+InputStateKey of an Interaction is always a key name in the state.
+any input ending in Path is a JSON Path expression pointing somewhere into the state.
+any input with the name "formula" is a math or conditional (boolean) expression.
+any input with the name "operation" is a date operator (e.g. addDays, dayOfWeek) that points to a C# method or property on the DateTime struct with camel case.
+any input with the name containing "file" or "dir" is a file path or file name or folder path on a file system.
+any input with the name containing "schema" is an object (a DataSchema) describing a database table. Keys are the column names and corresponding string values are data types (e.g. string, integer, number, or date).
+any input with the name "url" is a Uri.
+any input with the name "format" is a .NET string format for numbers or dates.
+any input with the name "query" is a Constant name (constants reside in Constants subfolder as text files; each constant is a separate file and the file name is the Constant name).
+any input with the name "connString" is a database-specific connection string.
+any input with the name "systemType" is a database system name, e.g. SqlServer or MemorySql.
+any input with the name "header" is an array of objects like this: { "key": "(string)", "value": "(string)" }.
+any input with the name "parameters" is an object like this: { "schema": (a DataSchema for the parameters), "data": (an object with parameter names.as keys and parameter values as values) }
+

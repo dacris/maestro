@@ -1,0 +1,21 @@
+{
+  "url": "https://api.dacris.com/post",
+  "method": "POST",
+  "header": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Host",
+      "value": "api.dacris.com"
+    }
+  ],
+  "bodyPath": "$.testVariable", //or,
+  "bodyFile": "SampleFile.json",
+  "retryTimes": 3, //default: 3, can be omitted
+  "retryDelay": 10000, //default: 10000, can be omitted (milliseconds)
+  "outputFile": "Test.json",
+  "timeout": 60000, //default: 60000, can be omitted (milliseconds)
+  "contentHeaders": [ "Content-Type" ] //optional, default is Content-Type only
+}

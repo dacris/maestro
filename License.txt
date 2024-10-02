@@ -1,0 +1,38 @@
+================================
+DACRIS MAESTRO FRAMEWORK LICENSE
+================================
+
+Dacris.Maestro.dll (Dacris Maestro Framework) is free for any use except for use in commercial applications.
+This means that you can use Dacris.Maestro.dll for free in freeware or open-source applications.
+To use Dacris.Maestro.dll legally in a commercial application you must purchase a license from Dacris Software.
+
+You may use Dacris Maestro Framework in your applications, subject to the following terms:
+- You may not attempt to decompile or disassemble the Dacris.Maestro.dll binary file.
+- You may not modify the binaries in any way.
+- You may distribute Dacris.Maestro.dll freely, in whole or in part, provided that
+  you include this license agreement in the distribution package.
+- You may not distribute modified versions of files in this package.
+- You may not resell, rent, or lease copies of Dacris Maestro Framework to others.
+
+You must agree to all of these terms in order to use Dacris Maestro Framework.
+
+Acceptable non-commercial users:
+- Public sector institutions (such as governments)
+- Students
+- Non-profit institutions
+- Developers working on a free or open-source project
+
+Acceptable non-commercial uses:
+- Open-source software
+- Freeware
+- Public infrastructure
+
+Commercial uses requiring a commercial license:
+- IT department automation
+- Freemium software
+- Paid subscription software
+- Derivative commercial products
+- Any use within a for-profit firm
+
+Commercial licenses are available for purchase from www.dacris.com.
+A single commercial license covers up to 1000 users within an organization.

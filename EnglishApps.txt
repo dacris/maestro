@@ -1,0 +1,34 @@
+Idea: Plain English app descriptions.
+
+Line Syntax:
+repeat
+|
+in parallel
+|
+[check <Id> from] <Multiple Word Interaction Class Name (converted to PascalCase)> using <Namespace (each space = .), Max 3 Words> [with <InputStateKey>]
+|
+alias <someLongName> as <shorterName> (before any other statement in the app) (names are single word)
+
+Each interaction is identified by the line number (e.g. i1 = line 1).
+A block is started when an indentation level (tab) is added.
+The keyword "check" at the start of a block specifies the condition checked (followed by the rest of the interaction spec).
+The instruction "repeat" or "in parallel" turn on flags in the current block and should be at the start of the block.
+Keywords and interaction names and aliases are case-insensitive. Namespace names and key names (InputStateKey) are case-sensitive.
+For actions with "with" at the end,
+there can be any number of additional annotations at the end of that line that describe that action in more detail.
+
+Two blocks can exist side-by-side inside another block if you put a no op instruction between them on the parent level.
+Example:
+	action1
+no op using the core
+	action2
+
+alias Dacris.Maestro as the
+write using the console with someAppKey1
+input sensitive using the console with someAppKey2
+read csv file using the data with someAppKey3
+	repeat
+	check testResult from no op using the core
+	select using the data with someAppKey4
+	math expression using the core with someAppKey5
+request http using the web with someHttpConfig1

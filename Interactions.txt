@@ -1,0 +1,103 @@
+Definitions
+- Sensitive keys: Can't be written to disk.
+- *Path: These are JSON paths always.
+- State: Lives in memory as a dictionary and is written to / read from JSON.
+- Constant: Lives in a file in Constants folder.
+  All files from this folder are read at startup (filename is the constant name) and are immutable during app run.
+- Errors: First error is written to "appError" key in the state and persisted to a local file, appError.json.
+  An error will terminate the application flow.
+
+Templates
+- #@<jsonPath>@ to reference something
+- If reference is to an array, levelNTemplate (starting with N=2) will be used to process each object in the array, where N = the level inside the nested structure
+- Strings are encoded according to the file format, e.g. HTML or CSV; use TXT to avoid encoding
+
+Data
+- $.dataConnections: This key defines each connection as an object with a key, e.g. "dataConnections": { "key1": { ... } }
+- $.dataConnections.X.systemType: "<sysClassName>" (supported systems currently: MemorySql, SqlServer, MockData (Select will read from <Constant>.csv))
+- $.dataConnections.X.connString: Depends on the systemType (such as SqlServer), not required for MemorySql, local folder path for MockData (current folder if not given)
+- "connPath": Path relative to $.dataConnections where the connection is defined.
+- Session is created on first interaction in Block. Session expires and is removed on Block end. Sessions are per-connection.
+- "parameters": { "schema": { "col": "type", ... }, "data": { "col": "value", ... } }
+- "schema": { "col": "type", ... } where "type" can be "string", "integer", "number", or "date"
+- "timeout": (milliseconds) optional; default 900 seconds
+- $.customDataProviders: Key-value pairs describing system type and .NET namespace/assembly (DLL) of implementation, e.g. { "MySQL": "YourCompany.YourLibrary" }
+  - Custom data provider must implement Dacris.Maestro.Data.IDataRepository and have a no-parameter constructor; use BaseDataRepository for common functionality
+  - Name of class should be <systemType>DataRepository and should be public
+
+Storage
+- $.storageLocations: This key defines each storage location as an object with a key, e.g. "storageLocations": { "key1": { ... } }
+- $.storageLocations.X.systemType: "<systemType>" (supported systems currently: Local, SFTP)
+- $.storageLocations.X.serverHost: Host name for SFTP
+- $.storageLocations.X.user: User name for SFTP
+- $.storageLocations.X.secretKey: Password key for SFTP
+- $.storageLocations.X.port: Port number for SFTP
+- Each key in storageLocations acts as a reusable file path prefix (e.g. key1:some/storage/path)
+- $.customStorageProviders: Key-value pairs describing system type and .NET namespace/assembly (DLL) of implementation, e.g. { "Azure": "Dacris.AzureStorage" }
+  - Custom storage provider must implement Dacris.Maestro.Storage.IFileProvider and have a constructor which takes two arguments (Interaction i, string prefix)
+  - Name of class should be <systemType>FileProvider and should be public
+
+AI
+- $.chatSettings: This key defines the chat configuration as an object with a key, e.g. "myChatConfig"
+- $.chatSettings.X.systemType: "<systemType>" (supported systems currently: Ollama, OpenAI [coming soon])
+- $.chatSettings.X.port: Ollama port (omit for default)
+- $.chatSettings.X.model: Ollama model
+- $.chatSettings.X.secretKey: (currently unused; for OpenAI)
+
+Mocking
+- Set "mock":"true" at the root of your State.
+- Create "Mock.json" with State key overrides for any dataConnections and storageLocations you use, as well as any other path overrides like urls for HTTP requests.
+- MockState.json will be persisted instead of State.json. This will be used when in mock mode to read/write state instead of State.json.
+- For http requests, use file: as a Url prefix for a static file.
+- For storage, path structure may need to change if mock vs non-mock (see sftp app example).
+
+Quick Reference
+
+INTERACTION			PURPOSE						PRE-CONDITIONS												POST-CONDITIONS
+AI.Chatbot			Prompt a chatbot for a response.		chatSettings must be configured. chatSettingsPath points to a chat configuration.
+Console.ReadInput		Read a string from the console.			-													State key at InputStateKey contains the input string.
+Console.ReadSensitive		Read a sensitive string from the console.	-													State key at InputStateKey contains the input string and is marked sensitive.
+Console.Write			Write a string from the state to the console.	InputStateKey has the message.										Message string is written to the console.
+Core.AppendStringLineToFile	Appends a string to a file as a single line.	inputPath points to the string. outputFile has the file path.						Line is written to the file.
+Core.Block			Block of statements.				Interaction at ConditionCheck is run and <ConditionCheck>.Id is tested.					The interactions in Statements are run if condition is true.
+Core.ClearState			Removes the key.				InputStateKey has the key name.										The key is removed from state.
+Core.CustomCSharpCode		Compiles and executes code from a .cs file.	Class must implement: static Task CustomInteraction.RunAsync(Interaction parent)			The code is compiled and executed.
+Core.DateOperator		Transforms a date value.			operation must be defined, outputPath, and any required operands for the op (JSON Paths)		Result is saved at outputPath.
+Core.Delay			Wait for specified time period.			timeout is in milliseconds.										The execution is delayed by "timeout" milliseconds.
+Core.EndFlow			Terminates the application.			-													The app is ended. Dacris.Maestro.Core.FlowEndException is thrown.
+Core.HtmlFileFromTemplate	Transforms a template file using state.		htmlTemplateFile is file path										Output.html is produced.
+Core.TxtFileFromTemplate	Transforms a template file using state.		txtTemplateFile is file path										Output.txt is produced.
+Core.CsvFileFromTemplate	Transforms a template file using state.		csvTemplateFile is file path										Output.csv is produced.
+Core.JsonFileFromTemplate	Transforms a template file using state.		jsonTemplateFile is file path										Output.json is produced.
+Core.JsonToXml			Converts a JSON file to XML.			inputFile is the file path to read, outputFile is the file to write, xmlRoot is the root element	An XML file is created at outputFile location.
+Core.FormatValue		Format or encode a value as a string.		inputPath points to the input value. format tells us the format of the output.				Value is written to outputPath using the specified format style.
+Core.MakeRandom			Makes a random value in the state.		InputStateKey has the key with params: type [boolean, integer, number, date], start, end, outputPath.	Random value is generated at outputPath.
+Core.MakeSensitive		Makes a key sensitive in the state.		InputStateKey has the key name.										The key is sensitive.
+Core.MathExpression		Evaluates a math or boolean formula.		formula is the formula, precision is the number of decimal digits, required operands (JSON Paths)	Result is saved at outputPath.
+Core.MergeStateFromFile		Reads JSON state and merges it in.		InputStateKey has the file path.									State is merged with file contents.
+Core.NoOp			-						-													-
+Core.PersistState		Writes JSON state to a file.			InputStateKey has the key that should be persisted. Can be null to persist entire state.		If InputStateKey is provided, writes <InputStateKey>.json. Otherwise, writes State.json.
+Core.RaiseError			Reports an error.				InputStateKey has the key that has the error message (string).						An exception is thrown and app flow is terminated.
+Core.ReadStateFromFile		Reads JSON state and replaces current.		InputStateKey has the name of the file (without extension) and the name of the key. Null for all state.	If InputStateKey is provided, reads <InputStateKey>.json into key at InputStateKey. Otherwise, reads all of State.json.
+Core.ReadStringFromFile		Reads a string from a file.			inputFile is the file path to read, outputPath is where it should be saved in the state.		File contents are transferred to outputPath as a string.
+Core.ReadSystemVariable		Reads a system-specific environment variable.	InputStateKey is the variable name.									Variable is read to a specific key (InputStateKey) in the state.
+Core.RunExe			Runs a command line.				workingDir is current dir by default, args is the args line, exe is the exe file path.			The command is executed in workingDir with args and awaited synchronously.
+Core.RunSubApp			Runs another plain English LogicApp.		InputStateKey has the name of the app (without extension). Reuses the same state and constants.		The specified LogicApp is run in the same context as this app.
+Core.StringFromTemplate		Transforms a template string using state.	template is the string template, format is the format (e.g. csv), outputPath is where result is saved.	Transformed string is produced and saved at outputPath.
+Core.TransferState		Transfers multiple state values within state.	inputPaths is array of input paths, outputPaths is array of output paths. Two arrays correspond.	Locations at outputPaths have values from inputPaths. If an output path is empty, the value at input path is deleted.
+Core.XmlToJson			Converts an XML document to JSON.		inputFile is the file path to read, outputFile or outputPath are where JSON is written.			Location at outputPath has the JSON (if specified). File at outputFile has the JSON (if specified).
+Data.Modify			Executes a modification query.			query is a constant name, parameters is defined								Query is executed on the specified system.
+Data.Select			Executes a selection query.			query is a constant name, outputFile (csv) or outputPath (->array), parameters, separator, schemaPath	Query is executed and results are produced and saved either to outputFile (CSV) or outputPath (state array).
+Data.ReadCsvFile		Reads data into the given system.		inputFile (csv) or inputPath (->array), schemaPath, separator, tableName, createTable ("true"/"false")	Reads the contents of inputFile or inputPath into the specified system as table rows. Table is created optionally.
+Email.SendSmtp			Sends an email using SMTP over SSL (port 465).	smtpServer, smtpUser, smtpPasswordKey, bodyHtmlTemplate (file path), from, to, subject, attach (array)	An email is sent using subject, body, etc. and attached files.
+Encrypt.AesDecrypt		Decrypts a file using AES and secret key.	encryptedFile (file path), inputKey (secret key), outputKey (where output is saved)			Decrypted value is saved at outputKey (sensitive).
+Encrypt.AesEncrypt		Encrypts a file using AES and secret key.	decryptedFile (file path), inputKey (secret key), outputKey (where output is saved)			Encrypted value is saved at outputKey.
+Storage.CopyFile		Copies a file.					inputFile (file path), outputFile (file path)								File is copied from inputFile location to outputFile location. Overwrites destination.
+Storage.DeleteFile		Deletes a file if it exists.			inputFile (file path) has the path to the file.								File is deleted if it exists.
+Storage.DoesFileExist		Checks if a file exists.			inputFile (file path), outputPath (JSON path)								If file exists, "true" at outputPath. Otherwise "false".
+Storage.FileMatch		Compares two files to see if they match.	file1 has file path of 1st file, file2 has file path of 2nd file					file1 is compared to file2. "True" is written to outputPath if they match.
+Storage.ListFiles		Lists the files in a directory.			inputDir (file path), pattern (wildcard) (optional), outputPath (JSON path will have array of files)	Array of files is saved to state at outputPath.
+Storage.MoveFile		Moves a file.					inputFile (file path), outputFile (file path)								File is moved from inputFile location to outputFile location. Overwrites destination.
+Web.RequestHttp			Sends an HTTP request.				See HttpRequestSample.json. InputStateKey has the key name where the input object is found.		Response is saved as a file at outputFile. Request is retried <retryTimes> times if unsuccessful.
+Zip.Compress			Compresses a directory as ZIP.			InputStateKey must be the name of the zip file. Value of that key is directory filesystem path.		<InputStateKey>.zip file is created in current directory.
+Zip.Decompress			Decompresses a ZIP to a directory.		outputDir is the filesystem path of the directory, and inputFile is the zip file path.			inputFile is decompressed to outputDir. Overwrites destination files.
