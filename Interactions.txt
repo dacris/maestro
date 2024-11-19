@@ -12,9 +12,14 @@ Templates
 - If reference is to an array, levelNTemplate (starting with N=2) will be used to process each object in the array, where N = the level inside the nested structure
 - Strings are encoded according to the file format, e.g. HTML or CSV; use TXT to avoid encoding
 
+Logging
+- Serilog configuration should be placed inside SerilogConfig.json in the Maestro app's directory.
+- Supported log sinks: RollingFile, Console, Splunk, EventLog, Dynatrace, Email, ElmahIo, Http, Seq
+- Log and LogState interactions are available; Log writes a message, LogState writes a value from app state (by JSON path)
+
 Data
 - $.dataConnections: This key defines each connection as an object with a key, e.g. "dataConnections": { "key1": { ... } }
-- $.dataConnections.X.systemType: "<sysClassName>" (supported systems currently: MemorySql, SqlServer, MockData (Select will read from <Constant>.csv))
+- $.dataConnections.X.systemType: "<sysClassName>" (supported systems currently: MemorySql, SqlServer, Firebird, MockData (Select will read from <Constant>.csv))
 - $.dataConnections.X.connString: Depends on the systemType (such as SqlServer), not required for MemorySql, local folder path for MockData (current folder if not given)
 - "connPath": Path relative to $.dataConnections where the connection is defined.
 - Session is created on first interaction in Block. Session expires and is removed on Block end. Sessions are per-connection.
@@ -24,6 +29,8 @@ Data
 - $.customDataProviders: Key-value pairs describing system type and .NET namespace/assembly (DLL) of implementation, e.g. { "MySQL": "YourCompany.YourLibrary" }
   - Custom data provider must implement Dacris.Maestro.Data.IDataRepository and have a no-parameter constructor; use BaseDataRepository for common functionality
   - Name of class should be <systemType>DataRepository and should be public
+- Google Sheets interaction documentation - see Authentication - credentials should be saved in local JSON file:
+  https://www.nuget.org/packages/GoogleSheetsWrapper/1.0.43
 
 Storage
 - $.storageLocations: This key defines each storage location as an object with a key, e.g. "storageLocations": { "key1": { ... } }
@@ -39,10 +46,10 @@ Storage
 
 AI
 - $.chatSettings: This key defines the chat configuration as an object with a key, e.g. "myChatConfig"
-- $.chatSettings.X.systemType: "<systemType>" (supported systems currently: Ollama, OpenAI [coming soon])
+- $.chatSettings.X.systemType: "<systemType>" (supported systems currently: Ollama, OpenAI)
 - $.chatSettings.X.port: Ollama port (omit for default)
 - $.chatSettings.X.model: Ollama model
-- $.chatSettings.X.secretKey: (currently unused; for OpenAI)
+- $.chatSettings.X.secretKey: (for OpenAI) the state key which has the API key in it
 
 Mocking
 - Set "mock":"true" at the root of your State.
@@ -76,6 +83,9 @@ Core.MakeSensitive		Makes a key sensitive in the state.		InputStateKey has the k
 Core.MathExpression		Evaluates a math or boolean formula.		formula is the formula, precision is the number of decimal digits, required operands (JSON Paths)	Result is saved at outputPath.
 Core.MergeStateFromFile		Reads JSON state and merges it in.		InputStateKey has the file path.									State is merged with file contents.
 Core.NoOp			-						-													-
+Core.Log			Writes a message to Serilog sinks.		InputStateKey has the level and the message, like this: { "level": "Error", "message": "Test" }		A message with the specified level is written to the log. Allowed levels are Error, Warning, Information, Fatal, Debug.
+Core.LogState			Writes a piece of the state to Serilog sinks.	InputStateKey has the JSON path of the state entry that should be logged.				The app state at specified JSON path is written to the log as Debug.
+Core.Pause			Pauses execution and saves state snapshot.	-													The app state is saved to StateSnapshot.json. Execution is paused until key press or snapshot is deleted.
 Core.PersistState		Writes JSON state to a file.			InputStateKey has the key that should be persisted. Can be null to persist entire state.		If InputStateKey is provided, writes <InputStateKey>.json. Otherwise, writes State.json.
 Core.RaiseError			Reports an error.				InputStateKey has the key that has the error message (string).						An exception is thrown and app flow is terminated.
 Core.ReadStateFromFile		Reads JSON state and replaces current.		InputStateKey has the name of the file (without extension) and the name of the key. Null for all state.	If InputStateKey is provided, reads <InputStateKey>.json into key at InputStateKey. Otherwise, reads all of State.json.
@@ -89,6 +99,8 @@ Core.XmlToJson			Converts an XML document to JSON.		inputFile is the file path t
 Data.Modify			Executes a modification query.			query is a constant name, parameters is defined								Query is executed on the specified system.
 Data.Select			Executes a selection query.			query is a constant name, outputFile (csv) or outputPath (->array), parameters, separator, schemaPath	Query is executed and results are produced and saved either to outputFile (CSV) or outputPath (state array).
 Data.ReadCsvFile		Reads data into the given system.		inputFile (csv) or inputPath (->array), schemaPath, separator, tableName, createTable ("true"/"false")	Reads the contents of inputFile or inputPath into the specified system as table rows. Table is created optionally.
+Data.ReadGoogleSheet		Reads a Google spreadsheet as CSV.		spreadsheetId, serviceAccountName, mainSheetName, tabName, jsonCredentialFile				Reads the contents of the tab specified by tabName on the specified Google sheet and saves that as Output.csv.
+Data.UploadToGoogleSheet	Uploads a CSV to a blank Google spreadsheet.	inputFile (csv), spreadsheetId, serviceAccountName, mainSheetName, tabName, jsonCredentialFile		Writes the contents of the CSV file specified by inputFile to the Google spreadsheet specified.
 Email.SendSmtp			Sends an email using SMTP over SSL (port 465).	smtpServer, smtpUser, smtpPasswordKey, bodyHtmlTemplate (file path), from, to, subject, attach (array)	An email is sent using subject, body, etc. and attached files.
 Encrypt.AesDecrypt		Decrypts a file using AES and secret key.	encryptedFile (file path), inputKey (secret key), outputKey (where output is saved)			Decrypted value is saved at outputKey (sensitive).
 Encrypt.AesEncrypt		Encrypts a file using AES and secret key.	decryptedFile (file path), inputKey (secret key), outputKey (where output is saved)			Encrypted value is saved at outputKey.

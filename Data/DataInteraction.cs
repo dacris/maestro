@@ -22,7 +22,7 @@ namespace Dacris.Maestro.Data
                         ObjectSpecs = [
                             new InputSpec {
                                 Name = "systemType", ValueSpec = new ValueSpec { ValueType = ValueTypeSpec.Enum,
-                                AcceptedValues = ["MemorySql", "SqlServer", "MockData"]
+                                AcceptedValues = ["MemorySql", "SqlServer", "Firebird", "MockData"]
                             } },
                             new InputSpec("connString")
                         ]
@@ -61,15 +61,12 @@ namespace Dacris.Maestro.Data
             {
                 connString = defaultConnectionString;
             }
-            await RetryAsync(async (y) =>
-            {
-                var existingSession = BlockSessionResources!.FirstOrDefault(
-                    r => typeof(DbConnection).IsAssignableFrom(r.GetType())
-                        && ((DbConnection)r).ConnectionString == connString);
-                innerSession = (DbConnection)(existingSession ?? y.OpenSession(BlockSessionResources!, connString));
-                await Task.CompletedTask;
-            }, repo);
+            var existingSession = BlockSessionResources!.FirstOrDefault(
+                r => typeof(DbConnection).IsAssignableFrom(r.GetType())
+                    && ((DbConnection)r).ConnectionString == connString);
+            innerSession = (DbConnection)(existingSession ?? repo.OpenSession(BlockSessionResources!, connString));
             repo.Timeout = Math.Max(30, int.Parse(InputState!["timeout"]?.ToString() ?? "900000") / 1000);
+            await Task.CompletedTask;
             return (repo, innerSession!);
         }
 

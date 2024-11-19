@@ -1,5 +1,6 @@
 ﻿
 using OllamaSharp;
+using OpenAI.Chat;
 using System.Text;
 
 namespace Dacris.Maestro.AI
@@ -43,28 +44,44 @@ namespace Dacris.Maestro.AI
 
         public override async Task RunAsync()
         {
-            // TODO: Support OpenAI (v1.2)
+            if (AppState.Instance.IsMock())
+                return;
+                
+            var stringBuilder = new StringBuilder();
             var config = AppState.Instance.ReadKey("chatSettings")!
                         .SelectToken(InputState!["chatSettingsPath"]!.ToString())!;
-            var port = int.Parse(config["port"]?.ToString() ?? "11434");
-            // set up the client
-            var uri = new Uri("http://localhost:" + port);
-            var ollama = new OllamaApiClient(uri);
-            // select a model which should be used for further operations
-            ollama.SelectedModel = config["model"]!.ToString();
-            ConversationContext? context = null;
-            StringBuilder stringBuilder = new StringBuilder();
-            await foreach (var stream in ollama.StreamCompletion(InputState["prompt"]!.ToString(), context))
+            if (config["systemType"]!.ToString().ToLowerInvariant() == "openai")
             {
-                stringBuilder.Append(stream?.Response ?? string.Empty);
+                var client = new ChatClient(
+                    model: config["model"]!.ToString(),
+                    apiKey: AppState.Instance.ReadKey(config["secretKey"]!.ToString())!.ToString());
+
+                var completion = await client.CompleteChatAsync(InputState["prompt"]!.ToString());
+                stringBuilder.AppendLine(completion.Value.Content[0].Text);
+            }
+            else
+            {
+                var port = int.Parse(config["port"]?.ToString() ?? "11434");
+                // set up the client
+                var uri = new Uri("http://localhost:" + port);
+                var ollama = new OllamaApiClient(uri);
+                // select a model which should be used for further operations
+                ollama.SelectedModel = config["model"]!.ToString();
+                await foreach (var stream in ollama.GenerateAsync(InputState["prompt"]!.ToString()))
+                {
+                    stringBuilder.Append(stream?.Response ?? string.Empty);
+                }
             }
             var response = stringBuilder.ToString();
             if (InputState["isCode"]?.ToString().ToLowerInvariant() == "true")
             {
-                var idx = response.IndexOf("```");
-                var nextLine = response.IndexOf('\n', idx) + 1;
-                var endIdx = response.IndexOf("```", nextLine);
-                response = response.Substring(nextLine, endIdx - nextLine);
+                var idx = response.IndexOf(@"```");
+                if (idx >= 0)
+                {
+                    var nextLine = response.IndexOf('\n', idx) + 1;
+                    var endIdx = response.IndexOf(@"```", nextLine);
+                    response = response.Substring(nextLine, endIdx - nextLine);
+                }
             }
             File.WriteAllText("ChatResponse.txt", response);
         }

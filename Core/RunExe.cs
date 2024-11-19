@@ -15,7 +15,7 @@ public class RunExe : Interaction
         var path = InputState!["workingDir"]?.ToString() ?? Environment.CurrentDirectory;
         var args = InputState!["args"]?.ToString() ?? string.Empty;
         var exe = InputState!["exe"]!.ToString();
-        var process = Process.Start(new ProcessStartInfo { WorkingDirectory = path, FileName = exe, Arguments = args });
+        using var process = Process.Start(new ProcessStartInfo { WorkingDirectory = path, FileName = exe, Arguments = args });
         await process!.WaitForExitAsync();
     }
 }

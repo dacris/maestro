@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
+using Serilog;
 using System.Collections.Immutable;
 
 namespace Dacris.Maestro;
@@ -8,6 +9,7 @@ public class AppState
     public HashSet<string> SensitiveKeys { get; set; } = new();
     public JObject StateObject { get; set; } = JObject.Parse("{}");
     public ImmutableDictionary<string, string> Constants { get; init; }
+    public ILogger? Logger { get; set; }
     public static readonly AppState Instance;
     private readonly ImmutableDictionary<string, string> _defaultConstants = new Dictionary<string, string>()
             {

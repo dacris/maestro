@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 
 namespace Dacris.Maestro.Web
 {
@@ -9,15 +10,14 @@ namespace Dacris.Maestro.Web
 
         public override void Specify()
         {
-            InputSpec.AddInputs("url", "method", "contentHeaders", "header", "bodyPath", "bodyFile", "outputFile");
-            InputSpec.StateObjectKey("contentHeaders")
+            InputSpec.AddInputs("url", "method", "content", "header", "bodyPath", "bodyFile", "outputFile");
+            InputSpec.StateObjectKey("content")
                 .ValueSpec = new ValueSpec
                 {
-                    ValueType = ValueTypeSpec.Array,
-                    InnerSpec = new ValueSpec
-                    {
-                        ValueType = ValueTypeSpec.String
-                    }
+                    ValueType = ValueTypeSpec.Object,
+                    ObjectSpecs = [
+                        new InputSpec("header")
+                    ]
                 };
             InputSpec.AddTimeout();
             InputSpec.AddRetry();
@@ -30,7 +30,6 @@ namespace Dacris.Maestro.Web
 
         private async Task RunHttpRequestAsync(object? param1)
         {
-            var contentHeaders = new[] { "Content-Type" };
             var url = InputState!["url"]!.ToString();
             if (AppState.Instance.IsMock())
             {
@@ -40,51 +39,109 @@ namespace Dacris.Maestro.Web
             var method = InputState!["method"]!.ToString();
             using var request = new HttpRequestMessage(HttpMethod.Parse(method), url);
             request.Headers.Clear();
-            var contentHeadersFromJson = InputState!["contentHeaders"];
-            if (contentHeadersFromJson is not null)
-            {
-                contentHeaders = contentHeadersFromJson.Select(x => x.ToString()).ToArray();
-            }
             InputState!["header"]?
-                .Where(x => !contentHeaders.Contains(x["key"]!.ToString()))
+                .Where(x => x["key"]!.ToString() != "Content-Type")
                 .ToList()
                 .ForEach(x =>
                 { request.Headers.Add(x["key"]!.ToString(), x["value"]!.ToString()); }
             );
             var bodyPath = InputState!["bodyPath"]?.ToString();
             var bodyFile = InputState!["bodyFile"]?.ToString();
+            var innerMultipartContent = (StreamContent?)null;
             using var infs = bodyFile is not null ? File.OpenRead(bodyFile) : (Stream?)null;
+            bool multipart = InputState["header"]!.SingleOrDefault(
+                            x => x["key"]!.ToString() == "Content-Type")?["value"]?.ToString()
+                            == "multipart/form-data";
             if (bodyPath is not null)
             {
                 var token = AppState.Instance.StateObject.SelectToken(bodyPath)!;
                 request.Content = new StringContent(token.ToString());
             }
-            if (infs is not null)
+            if (infs is not null && !multipart)
             {
                 request.Content = new StreamContent(infs);
             }
-            request.Content?.Headers.Clear();
-            if (InputState!["header"] is not null && request.Content is not null)
+            else if (infs is not null && multipart)
             {
-                InputState!["header"]?
-                    .Where(x => contentHeaders.Contains(x["key"]!.ToString()))
+                request.Content = new MultipartFormDataContent(DateTime.UtcNow.ToFileTime().GetHashCode().ToString());
+                innerMultipartContent = new StreamContent(infs);
+                ((MultipartFormDataContent)request.Content).Add(innerMultipartContent);
+            }
+            if (!multipart)
+            {
+                request.Content?.Headers.Clear();
+            }
+            innerMultipartContent?.Headers.Remove("Content-Type");
+            innerMultipartContent?.Headers.Remove("Content-Disposition");
+            if (request.Content is not null && InputState["header"] is not null)
+            {
+                var token = InputState["header"]!.SingleOrDefault(
+                            x => x["key"]!.ToString() == "Content-Type")?["value"];
+                if (token is not null && token.ToString() != "multipart/form-data")
+                {
+                    request.Content.Headers.ContentType = 
+                        new System.Net.Http.Headers.MediaTypeHeaderValue(token.ToString());
+                }
+            }
+            if (InputState!["content"]?["header"] is not null && (innerMultipartContent ?? request.Content) is not null)
+            {
+                InputState!["content"]!["header"]?
                     .ToList()
                     .ForEach(x =>
-                    { request.Content.Headers.Add(x["key"]!.ToString(), x["value"]!.ToString()); }
+                    { (innerMultipartContent ?? request.Content)?.Headers.Add(x["key"]!.ToString(), x["value"]!.ToString()); }
                 );
             }
+            try
+            {
+                using var cts = new CancellationTokenSource();
+                cts.CancelAfter(TimeSpan.FromMilliseconds(Math.Max(30000, double.Parse(InputState!["timeout"]?.ToString() ?? "60000"))));
+                using var response = await _httpClient.SendAsync(request, cts.Token);
 
-            using var cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMilliseconds(Math.Max(30000, double.Parse(InputState!["timeout"]?.ToString() ?? "60000"))));
-            using var response = await _httpClient.SendAsync(request, cts.Token);
+                response.EnsureSuccessStatusCode();
+                using var stream = await response.Content.ReadAsStreamAsync();
+                string outputFile = InputState!["outputFile"]!.ToString();
+                if (File.Exists(outputFile))
+                    File.Delete(outputFile);
+                using var fs = File.OpenWrite(outputFile);
+                await stream.CopyToAsync(fs);
+            }
+            finally
+            {
+                innerMultipartContent?.Dispose();
+                request.Content?.Dispose();
+            }
+        }
 
-            response.EnsureSuccessStatusCode();
-            using var stream = await response.Content.ReadAsStreamAsync();
-            string outputFile = InputState!["outputFile"]!.ToString();
-            if (File.Exists(outputFile))
-                File.Delete(outputFile);
-            using var fs = File.OpenWrite(outputFile);
-            await stream.CopyToAsync(fs);
+        public static async Task<string> GetRawString(HttpRequestMessage request)
+        {
+            var sb = new StringBuilder();
+
+            var line1 = $"{request.Method} {request.RequestUri} HTTP/{request.Version}";
+            sb.AppendLine(line1);
+
+            foreach (var (key, value) in request.Headers)
+            foreach (var val in value)
+            {
+                var header = $"{key}: {val}";
+                sb.AppendLine(header);
+            }
+
+            if (request.Content?.Headers != null)
+            {
+                foreach (var (key, value) in request.Content.Headers)
+                foreach (var val in value)
+                {
+                    var header = $"{key}: {val}";
+                    sb.AppendLine(header);
+                }
+            }
+            sb.AppendLine();
+
+            var body = await (request.Content?.ReadAsStringAsync() ?? Task.FromResult<string>(string.Empty));
+            if (!string.IsNullOrWhiteSpace(body))
+                sb.AppendLine(body);
+
+            return sb.ToString();
         }
     }
 }

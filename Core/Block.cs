@@ -42,7 +42,10 @@ public class Block : Interaction
             do
             {
                 if (!Quiet)
+                {
                     System.Console.WriteLine($"Iterating Block with Id={Id}...");
+                    AppState.Instance.Logger?.Debug($"Iterating Block with Id={Id}...");
+                }
                 if (ConditionCheck is not null)
                 {
                     await RunInteractionAsync(ConditionCheck);
@@ -69,18 +72,25 @@ public class Block : Interaction
             }
             while (Repeat);
             if (!Quiet)
+            {
                 System.Console.WriteLine($"Ended Block with Id={Id}");
+                AppState.Instance.Logger?.Debug($"Ended Block with Id={Id}...");
+            }
         }
         catch (FlowEndException)
         when (IsRoot)
         {
             if (!Quiet)
+            {
                 System.Console.WriteLine("Flow ended by an interaction.");
+                AppState.Instance.Logger?.Debug("Flow ended by an interaction.");
+            }
             throw;
         }
         catch (Exception ex)
         when (IsRoot)
         {
+            AppState.Instance.Logger?.Error(ex.ToString());
             AppState.Instance.WriteKey("appError",
                 JToken.FromObject(new ErrorDescription(
                     ex.Message,
@@ -102,11 +112,17 @@ public class Block : Interaction
     private async Task RunInteractionAsync(Interaction a)
     {
         if (!Quiet)
+        {
             System.Console.WriteLine($"Running interaction with Id={a.Id} and Type={a.GetType().Name}...");
+            AppState.Instance.Logger?.Debug($"Running interaction with Id={a.Id} and Type={a.GetType().Name}...");
+        }
         LastInteractionRunning = a.Id;
         await a.RunAsync();
         if (!Quiet)
+        {
             System.Console.WriteLine($"Ran interaction with Id={a.Id} and Type={a.GetType().Name} successfully.");
+            AppState.Instance.Logger?.Debug($"Ran interaction with Id={a.Id} and Type={a.GetType().Name} successfully.");
+        }
     }
 
     public async Task PersistToFileAsync(string? appName = null, bool inPlainEnglish = false)

@@ -7,11 +7,16 @@ public class MathExpression : Interaction
 {
     public override void Specify()
     {
-        InputSpec.AddInputs("formula", "outputPath", "precision");
+        InputSpec.AddInputs("formula", "outputPath", "precision", "@operand");
         InputSpec.StateObjectKey("precision")
             .ValueSpec = new ValueSpec
             {
                 ValueType = ValueTypeSpec.Integer
+            };
+        InputSpec.StateObjectKey("@operand")
+            .ValueSpec = new ValueSpec
+            {
+                ValueType = ValueTypeSpec.JsonPath
             };
     }
 

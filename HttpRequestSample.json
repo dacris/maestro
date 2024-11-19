@@ -17,5 +17,4 @@
   "retryDelay": 10000, //default: 10000, can be omitted (milliseconds)
   "outputFile": "Test.json",
   "timeout": 60000, //default: 60000, can be omitted (milliseconds)
-  "contentHeaders": [ "Content-Type" ] //optional, default is Content-Type only
 }

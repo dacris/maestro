@@ -7,7 +7,7 @@ public class DateOperator : Interaction
 {
     public override void Specify()
     {
-        InputSpec.AddInputs("operation", "outputPath");
+        InputSpec.AddInputs("operation", "outputPath", "@operand");
         InputSpec.StateObjectKey("operation").ValueSpec = new ValueSpec
         {
             ValueType = ValueTypeSpec.Enum,
@@ -26,6 +26,10 @@ public class DateOperator : Interaction
                 "second",
                 "minute",
                 "hour"]
+        };
+        InputSpec.StateObjectKey("@operand").ValueSpec = new ValueSpec
+        {
+            ValueType = ValueTypeSpec.JsonPath
         };
     }
 

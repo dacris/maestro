@@ -17,12 +17,11 @@
             if (AppState.Instance.IsMock())
                 return;
 
-            var session = await EnsureSessionAsync();
-            var repo = session.Item1;
-            var conn = session.Item2;
-
             await RetryAsync(async (x) =>
             {
+                var session = await EnsureSessionAsync();
+                var repo = session.Item1;
+                var conn = session.Item2;
                 repo.Modify(conn, query, parameters);
                 await Task.CompletedTask;
             }, (object?)null);
