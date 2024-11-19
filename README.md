@@ -1,4 +1,5 @@
 # Dacris Maestro Framework
+## Version 2.0
 
 Executable Configuration: A Flexible Framework for Automation
 ---
@@ -43,7 +44,6 @@ A serializable global state is provided, where each interaction can read/write d
 A Logic App can be executed in any C# program or class library, using a simple snippet of a couple of lines of code.
 It can also be executed at the command line using the LogicAppRunner.
 
-## 5. Questions to be Answered in Version 1.2+
+## 5. Questions to be Answered in Version 2.1+
 
-- How do we debug a logic app?
 - Can interactions be implemented in other languages, e.g. Java or Scala or Python or JavaScript?
