@@ -6,6 +6,7 @@ public class Pause : Interaction
 {
     public override void Specify()
     {
+        Description = "Pauses execution and saves state snapshot.";
     }
 
     public override async Task RunAsync()

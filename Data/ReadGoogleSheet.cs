@@ -8,6 +8,7 @@ namespace Dacris.Maestro.Data
         {
             InputSpec.AddInputs("spreadsheetId", "serviceAccountName", "mainSheetName", "tabName", "jsonCredentialFile");
             InputSpec.AddRetry();
+            Description = "Reads a Google spreadsheet as CSV.";
         }
 
         public override async Task RunAsync()
@@ -46,6 +47,7 @@ namespace Dacris.Maestro.Data
         {
             InputSpec.AddInputs("inputFile", "spreadsheetId", "serviceAccountName", "mainSheetName", "tabName", "jsonCredentialFile");
             InputSpec.AddRetry();
+            Description = "Uploads a CSV to a blank Google spreadsheet.";
         }
 
         public override async Task RunAsync()

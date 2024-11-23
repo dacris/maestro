@@ -10,6 +10,7 @@ namespace Dacris.Maestro.Core
 
         public override void Specify()
         {
+            Description = "Waits for specified time period.";
             InputSpec.AddTimeout();
         }
     }

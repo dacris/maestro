@@ -10,6 +10,7 @@ namespace Dacris.Maestro.Web
 
         public override void Specify()
         {
+            Description = "Sends an HTTP request.";
             InputSpec.AddInputs("url", "method", "content", "header", "bodyPath", "bodyFile", "outputFile");
             InputSpec.StateObjectKey("content")
                 .ValueSpec = new ValueSpec

@@ -19,7 +19,7 @@ Logging
 
 Data
 - $.dataConnections: This key defines each connection as an object with a key, e.g. "dataConnections": { "key1": { ... } }
-- $.dataConnections.X.systemType: "<sysClassName>" (supported systems currently: MemorySql, SqlServer, Firebird, MockData (Select will read from <Constant>.csv))
+- $.dataConnections.X.systemType: "<sysClassName>" (supported systems currently: MemorySql, SqlServer, Firebird, Postgres, MySQL, MockData (Select will read from <Constant>.csv))
 - $.dataConnections.X.connString: Depends on the systemType (such as SqlServer), not required for MemorySql, local folder path for MockData (current folder if not given)
 - "connPath": Path relative to $.dataConnections where the connection is defined.
 - Session is created on first interaction in Block. Session expires and is removed on Block end. Sessions are per-connection.

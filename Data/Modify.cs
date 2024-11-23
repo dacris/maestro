@@ -7,6 +7,7 @@
             base.Specify();
             InputSpec.AddInputs("query", "parameters");
             InputSpec.AddRetry();
+            Description = "Executes a SQL modification query or stored proc.";
         }
 
         public override async Task RunAsync()

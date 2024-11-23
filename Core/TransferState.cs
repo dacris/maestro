@@ -6,6 +6,7 @@ namespace Dacris.Maestro.Core
     {
         public override void Specify()
         {
+            Description = "Transfers multiple state values within state.";
             InputSpec.AddInputs("inputPaths", "outputPaths");
             InputSpec.Inputs[0].ValueSpec.ObjectSpecs!.ForEach(x => x.ValueSpec = new ValueSpec
             {

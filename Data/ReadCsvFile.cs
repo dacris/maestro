@@ -13,6 +13,7 @@ namespace Dacris.Maestro.Data
             InputSpec.StateObjectKey("createTable")
                 .WithSimpleType(ValueTypeSpec.Boolean);
             InputSpec.AddRetry();
+            Description = "Reads a CSV file into an in-memory SQL table.";
         }
 
         public override async Task RunAsync()

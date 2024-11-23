@@ -3,6 +3,7 @@ public class Log : Interaction
 {
     public override void Specify()
     {
+        Description = "Writes a message to Serilog sinks.";
         InputSpec.AddInputs("level", "message");
     }
 

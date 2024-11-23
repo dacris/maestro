@@ -7,6 +7,7 @@ public class DateOperator : Interaction
 {
     public override void Specify()
     {
+        Description = "Transforms a date/time value using an operator.";
         InputSpec.AddInputs("operation", "outputPath", "@operand");
         InputSpec.StateObjectKey("operation").ValueSpec = new ValueSpec
         {

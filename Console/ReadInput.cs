@@ -4,6 +4,7 @@ public class ReadInput : Interaction
 {
     public override void Specify()
     {
+        Description = "Reads a string from the console.";
         // no inputs
     }
 

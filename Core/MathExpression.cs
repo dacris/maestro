@@ -7,6 +7,7 @@ public class MathExpression : Interaction
 {
     public override void Specify()
     {
+        Description = "Evaluates a math or boolean formula.";
         InputSpec.AddInputs("formula", "outputPath", "precision", "@operand");
         InputSpec.StateObjectKey("precision")
             .ValueSpec = new ValueSpec

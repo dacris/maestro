@@ -11,6 +11,7 @@ public class MoveFile : Interaction
 {
     public override void Specify()
     {
+        Description = "Moves a file.";
         InputSpec.AddInputs("inputFile", "outputFile");
         InputSpec.UseStoragePaths();
         InputSpec.AddStorageAbstractionInput();
@@ -38,6 +39,7 @@ public class CopyFile : Interaction
 {
     public override void Specify()
     {
+        Description = "Copies a file.";
         InputSpec.AddInputs("inputFile", "outputFile");
         InputSpec.UseStoragePaths();
         InputSpec.AddStorageAbstractionInput();
@@ -64,6 +66,7 @@ public class DeleteFile : Interaction
 {
     public override void Specify()
     {
+        Description = "Deletes a file if it exists.";
         InputSpec.AddInputs("inputFile");
         InputSpec.UseStoragePaths();
         InputSpec.AddStorageAbstractionInput();
@@ -88,6 +91,7 @@ public class DoesFileExist : Interaction
 {
     public override void Specify()
     {
+        Description = "Checks if a file exists.";
         InputSpec.AddInputs("inputFile", "outputPath");
         InputSpec.UseStoragePaths();
         InputSpec.AddStorageAbstractionInput();
@@ -109,6 +113,7 @@ public class FileMatch : Interaction
 {
     public override void Specify()
     {
+        Description = "Compares two files to see if they match.";
         InputSpec.AddInputs("file1", "file2", "separator", "outputPath");
         InputSpec.UseStoragePaths();
         InputSpec.AddStorageAbstractionInput();
@@ -187,6 +192,7 @@ public class ListFiles : Interaction
 {
     public override void Specify()
     {
+        Description = "Lists the files in a directory.";
         InputSpec.AddInputs("inputDir", "pattern", "outputPath");
         InputSpec.UseStoragePaths();
         InputSpec.AddStorageAbstractionInput();

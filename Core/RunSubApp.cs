@@ -5,6 +5,8 @@ namespace Dacris.Maestro.Core
     {
         public override void Specify()
         {
+            Description = "Runs a sub-app.";
+            AiExclude = true;
             InputSpec.AddDefaultInput();
         }
 

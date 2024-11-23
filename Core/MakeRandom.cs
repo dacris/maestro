@@ -5,6 +5,7 @@
         private static bool hasDoneSelfTest = false;
         public override void Specify()
         {
+            Description = "Makes a random value in the state.";
             InputSpec.AddInputs("type", "start", "end", "outputPath");
             InputSpec.StateObjectKey("type").ValueSpec = new ValueSpec
             {

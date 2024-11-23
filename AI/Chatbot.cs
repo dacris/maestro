@@ -9,6 +9,8 @@ namespace Dacris.Maestro.AI
     {
         public override void Specify()
         {
+            Description = "Prompts a chatbot for a response.";
+
             InputSpec.AddInputs("chatSettingsPath", "prompt", "isCode");
             InputSpec.StateObjectKey("prompt").WithSimpleType(ValueTypeSpec.String);
             InputSpec.StateObjectKey("isCode").WithSimpleType(ValueTypeSpec.Boolean);

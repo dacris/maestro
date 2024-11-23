@@ -10,6 +10,7 @@ namespace Dacris.Maestro.Core
 
         public override void Specify()
         {
+            Description = "Reports an error.";
             InputSpec.AddDefaultInput();
         }
     }

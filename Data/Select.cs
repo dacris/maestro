@@ -7,6 +7,7 @@
             base.Specify();
             InputSpec.AddInputs("outputFile", "outputPath", "schemaPath", "separator", "query", "parameters");
             InputSpec.AddRetry();
+            Description = "Executes a SQL SELECT query on an in-memory SQL table, producing a JSON array in the state.";
         }
 
         public override async Task RunAsync()

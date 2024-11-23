@@ -4,6 +4,7 @@ public class ClearState : Interaction
 {
     public override void Specify()
     {
+        Description = "Removes a key from the state.";
         // no input
     }
 

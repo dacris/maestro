@@ -5,6 +5,8 @@ namespace Dacris.Maestro.Core
     {
         public override void Specify()
         {
+            Description = "Does nothing.";
+            AiExclude = true;
             /* no op */
         }
 

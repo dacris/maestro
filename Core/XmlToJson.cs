@@ -8,6 +8,7 @@ public class XmlToJson : Interaction
 {
     public override void Specify()
     {
+        Description = "Converts an XML document to JSON.";
         InputSpec.AddInputs("inputFile", "outputFile", "outputPath");
     }
 
@@ -33,6 +34,7 @@ public class JsonToXml : Interaction
 {
     public override void Specify()
     {
+        Description = "Converts a JSON file to XML.";
         InputSpec.AddInputs("inputFile", "outputFile", "xmlRoot");
     }
 

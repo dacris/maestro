@@ -11,6 +11,7 @@ namespace Dacris.Maestro.Core
     {
         public override void Specify()
         {
+            Description = "Compiles and executes code from a .cs file.";
             InputSpec.AddDefaultInput();
             InputSpec.Inputs[0].WithSimpleType(ValueTypeSpec.LocalPath);
         }

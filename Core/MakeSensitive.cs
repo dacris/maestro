@@ -5,6 +5,7 @@ namespace Dacris.Maestro.Core
     {
         public override void Specify()
         {
+            Description = "Makes a key sensitive in the state.";
             // no input
         }
 

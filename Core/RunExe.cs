@@ -6,6 +6,7 @@ public class RunExe : Interaction
 {
     public override void Specify()
     {
+        Description = "Runs a command line.";
         InputSpec.AddInputs("workingDir", "args", "exe");
         InputSpec.StateObjectKey("exe").WithSimpleType(ValueTypeSpec.LocalPath);
     }

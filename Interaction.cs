@@ -31,6 +31,12 @@ public abstract class Interaction
     [JsonIgnore]
     public InteractionInputSpec InputSpec { get; set; }
 
+    [JsonIgnore]
+    public string? Description { get; set; }
+
+    [JsonIgnore]
+    public bool AiExclude { get; set; } = false;
+
     public Interaction()
     {
         InputSpec = new InteractionInputSpec(GetType().FullName!);

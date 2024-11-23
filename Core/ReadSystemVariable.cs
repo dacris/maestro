@@ -4,6 +4,7 @@ public class ReadSystemVariable : Interaction
 {
     public override void Specify()
     {
+        Description = "Reads a system-specific environment variable.";
         InputSpec.AddDefaultInput();
         InputSpec.Inputs[0].ValueSpec = new ValueSpec { ValueType = ValueTypeSpec.Enum, AcceptedValues = ["now", "nowUtc"] };
     }

@@ -4,6 +4,7 @@ public class ReadStringFromFile : Interaction
 {
     public override void Specify()
     {
+        Description = "Reads a string from a file.";
         InputSpec.AddInputs("inputFile", "outputPath");
     }
 

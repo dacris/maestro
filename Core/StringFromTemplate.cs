@@ -6,6 +6,8 @@ public class StringFromTemplate : Interaction
 {
     public override void Specify()
     {
+        Description = "Creates a formatted string from a template and saves it in the state.";
+        AiExclude = true;
         InputSpec.AddInputs("template", "outputPath", "format");
         InputSpec.StateObjectKey("format").ValueSpec = new ValueSpec
         {

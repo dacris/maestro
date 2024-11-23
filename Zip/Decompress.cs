@@ -4,6 +4,7 @@
     {
         public override void Specify()
         {
+            Description = "Decompresses a ZIP to a directory.";
             InputSpec.AddInputs("outputDir", "inputFile");
         }
 

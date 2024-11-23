@@ -6,6 +6,7 @@ public class PersistState : Interaction
 {
     public override void Specify()
     {
+        Description = "Writes JSON state to a file.";
         // no input
     }
 

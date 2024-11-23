@@ -6,6 +6,7 @@ public class ReadSensitive : Interaction
 {
     public override void Specify()
     {
+        Description = "Reads a sensitive string from the console.";
         // no inputs
     }
 

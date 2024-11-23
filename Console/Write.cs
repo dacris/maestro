@@ -3,6 +3,8 @@ public class Write : Interaction
 {
     public override void Specify()
     {
+        Description = "Writes a message to the console.";
+        AiExclude = true;
         InputSpec.AddDefaultInput();
     }
 

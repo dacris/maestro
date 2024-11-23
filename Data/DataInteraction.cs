@@ -22,7 +22,7 @@ namespace Dacris.Maestro.Data
                         ObjectSpecs = [
                             new InputSpec {
                                 Name = "systemType", ValueSpec = new ValueSpec { ValueType = ValueTypeSpec.Enum,
-                                AcceptedValues = ["MemorySql", "SqlServer", "Firebird", "MockData"]
+                                AcceptedValues = ["MemorySql", "SqlServer", "Firebird", "Postgres", "MySQL", "MockData"]
                             } },
                             new InputSpec("connString")
                         ]

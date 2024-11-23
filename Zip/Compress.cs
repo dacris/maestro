@@ -4,6 +4,7 @@
     {
         public override void Specify()
         {
+            Description = "Compresses a directory as ZIP.";
             InputSpec.AddDefaultInput();
             InputSpec.Inputs[0].WithSimpleType(ValueTypeSpec.LocalPath);
         }

@@ -9,6 +9,8 @@ public class FormatValue : Interaction
     public static readonly string[] StringFormats = ["txt", "url", "html", "json", "csv", "toBase64UTF8", "fromBase64UTF8"];
     public override void Specify()
     {
+        Description = "Formats a string value from the state.";
+        AiExclude = true;
         InputSpec.AddInputs("inputPath", "format", "outputPath");
     }
 

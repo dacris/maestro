@@ -22,7 +22,8 @@ public class Block : Interaction
 
     public override void Specify()
     {
-        /* no op */
+        Description = "In a block";
+        AiExclude = true;
     }
 
     public override async Task RunAsync()

@@ -29,6 +29,12 @@ public class HtmlFileFromTemplate : FileFromTemplate
     {
         await RunAsync("html");
     }
+
+    public override void Specify()
+    {
+        base.Specify();
+        Description = "Creates an HTML file from a JSON array or object in the state.";
+    }
 }
 
 public class TxtFileFromTemplate : FileFromTemplate
@@ -36,6 +42,12 @@ public class TxtFileFromTemplate : FileFromTemplate
     public override async Task RunAsync()
     {
         await RunAsync("txt");
+    }
+
+    public override void Specify()
+    {
+        base.Specify();
+        Description = "Creates an text file from a JSON array or object in the state.";
     }
 }
 
@@ -45,6 +57,12 @@ public class CsvFileFromTemplate : FileFromTemplate
     {
         await RunAsync("csv");
     }
+
+    public override void Specify()
+    {
+        base.Specify();
+        Description = "Creates a CSV file from a JSON array or object in the state.";
+    }
 }
 
 public class JsonFileFromTemplate : FileFromTemplate
@@ -52,5 +70,11 @@ public class JsonFileFromTemplate : FileFromTemplate
     public override async Task RunAsync()
     {
         await RunAsync("json");
+    }
+
+    public override void Specify()
+    {
+        base.Specify();
+        Description = "Creates an JSON file from a JSON array or object in the state.";
     }
 }

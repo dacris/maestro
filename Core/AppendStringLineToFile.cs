@@ -5,6 +5,7 @@ namespace Dacris.Maestro.Core
     {
         public override void Specify()
         {
+            Description = "Appends a string to a file as a single line.";
             InputSpec.AddInputs("inputPath", "outputFile");
         }
 

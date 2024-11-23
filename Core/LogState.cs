@@ -3,6 +3,7 @@ public class LogState : Interaction
 {
     public override void Specify()
     {
+        Description = "Writes a piece of the state to Serilog sinks.";
         InputSpec.AddDefaultInput();
     }
 

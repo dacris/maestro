@@ -8,6 +8,7 @@ public class SendSmtp : Interaction
 {
     public override void Specify()
     {
+        Description = "Sends an email using SMTP over SSL.";
         InputSpec.AddInputs("smtpServer", "smtpUser", "smtpPasswordKey", "bodyHtmlTemplate", "from", "to", "subject", "attach");
         InputSpec.StateObjectKey("bodyHtmlTemplate").WithSimpleType(ValueTypeSpec.LocalPath);
         InputSpec.StateObjectKey("attach").ValueSpec = new ValueSpec

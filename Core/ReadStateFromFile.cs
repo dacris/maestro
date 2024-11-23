@@ -6,6 +6,7 @@ public class ReadStateFromFile : Interaction
 {
     public override void Specify()
     {
+        Description = "Reads JSON state and replaces current.";
         // no input
     }
 

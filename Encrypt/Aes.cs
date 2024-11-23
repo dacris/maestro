@@ -7,6 +7,7 @@ public class AesDecrypt : Interaction
 {
     public override void Specify()
     {
+        Description = "Decrypts a file using AES and secret key.";
         InputSpec.AddInputs("encryptedFile", "inputKey", "outputKey");
     }
 
@@ -28,6 +29,7 @@ public class AesEncrypt : Interaction
 {
     public override void Specify()
     {
+        Description = "Encrypts a file using AES and secret key.";
         InputSpec.AddInputs("decryptedFile", "inputKey", "outputKey");
     }
 

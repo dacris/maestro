@@ -5,6 +5,7 @@ public class MergeStateFromFile : Interaction
 {
     public override void Specify()
     {
+        Description = "Merges state from a JSON file into memory.";
         InputSpec.AddDefaultInput();
         InputSpec.Inputs[0].WithSimpleType(ValueTypeSpec.LocalPath);
     }
