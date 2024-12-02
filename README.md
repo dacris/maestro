@@ -1,5 +1,5 @@
 # Dacris Maestro Framework
-## Version 2.1
+## Version 2.2
 
 Executable Configuration: A Flexible Framework for Automation
 ---
