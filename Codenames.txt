@@ -4,4 +4,5 @@ Maestro v1.1	Jacksonville	The first city in Florida - you've landed there but yo
 Maestro v1.2	Melbourne	The first beach town where the weather is good all year, but not 100% perfect.
 Maestro v2.0	Varadero	It's close to perfect weather all year and a party vibe. Where else would you go?
 Maestro v2.1	Cancun		Full summer and a beautiful large beach riviera. Sippin' margaritas.
+Maestro v2.2	Grand Cayman	Full summer and an entertaining scenic island in the Caribbean.
 Maestro v3.0	Acapulco	Here we get to really enjoy ourselves like nowhere else in the Northern Hemisphere.

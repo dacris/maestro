@@ -30,7 +30,7 @@ public class MathExpression : Interaction
                 continue;
 
             var valueAsString = AppState.Instance.StateObject.SelectToken(parameter.Value.ToString())!.ToString();
-            object parsedValue = 0;
+            object parsedValue = valueAsString;
             if (bool.TryParse(valueAsString, out var b))
             {
                 parsedValue = b;
@@ -38,6 +38,10 @@ public class MathExpression : Interaction
             else if (decimal.TryParse(valueAsString, out var num))
             {
                 parsedValue = num;
+            }
+            else if (DateTime.TryParse(valueAsString, out var dt))
+            {
+                parsedValue = (dt - new DateTime(1899, 12, 30)).TotalDays;
             }
             e.Bind(parameter.Name, parsedValue);
         }

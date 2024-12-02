@@ -50,8 +50,8 @@ namespace Dacris.Maestro.Web
             var bodyFile = InputState!["bodyFile"]?.ToString();
             var innerMultipartContent = (StreamContent?)null;
             using var infs = bodyFile is not null ? File.OpenRead(bodyFile) : (Stream?)null;
-            bool multipart = InputState["header"]!.SingleOrDefault(
-                            x => x["key"]!.ToString() == "Content-Type")?["value"]?.ToString()
+            bool multipart = InputState["header"]?.SingleOrDefault(
+                            x => x["key"]?.ToString() == "Content-Type")?["value"]?.ToString()
                             == "multipart/form-data";
             if (bodyPath is not null)
             {
