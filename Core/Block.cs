@@ -11,9 +11,6 @@ public class Block : Interaction
     public List<Interaction> Statements { get; set; } = [];
 
     [JsonIgnore]
-    public Task[] Tasks => Statements.Select(s => s.RunAsync()).ToArray();
-
-    [JsonIgnore]
     public List<IDisposable> SessionResources { get; internal set; } = [];
     [JsonIgnore]
     public bool IsRoot { get; internal set; }
@@ -56,7 +53,9 @@ public class Block : Interaction
                     if (Parallel)
                     {
                         LastInteractionRunning = Statements.FirstOrDefault()?.Id;
-                        Task.WaitAll(Tasks);
+                        System.Threading.Tasks.Parallel.Invoke(
+                            new ParallelOptions { MaxDegreeOfParallelism = 64 },
+                            Statements.Select(s => new Action(() => { s.RunAsync().Wait(); })).ToArray());
                     }
                     else
                     {
