@@ -58,38 +58,47 @@ public class AppState
 
     public void WriteKey(string key, JToken value, bool sensitive = false)
     {
-        var obj = StateObject;
-        obj.Remove(key);
-        obj.Add(key, value);
-        StateObject = obj;
-        if (sensitive)
+        lock (this)
         {
-            SensitiveKeys.Remove(key);
-            SensitiveKeys.Add(key);
-            SensitiveKeys.Any(s => s.Equals(key)).ShouldBe(true);
+            var obj = StateObject;
+            obj.Remove(key);
+            obj.Add(key, value);
+            StateObject = obj;
+            if (sensitive)
+            {
+                SensitiveKeys.Remove(key);
+                SensitiveKeys.Add(key);
+                SensitiveKeys.Any(s => s.Equals(key)).ShouldBe(true);
+            }
+            ReadKey(key)!.ToString().ShouldBe(value.ToString());
         }
-        ReadKey(key)!.ToString().ShouldBe(value.ToString());
     }
 
     public void WritePath(string outputPath, JToken outputValue)
     {
-        UpdateJson(StateObject, outputPath, outputValue);
-        if (outputValue.Type == JTokenType.Null)
+        lock (this)
         {
-            StateObject.SelectToken(outputPath).ShouldBe(null);
-        }
-        else
-        {
-            StateObject.SelectToken(outputPath)!.ToString().ShouldBe(outputValue.ToString());
+            UpdateJson(StateObject, outputPath, outputValue);
+            if (outputValue.Type == JTokenType.Null)
+            {
+                StateObject.SelectToken(outputPath).ShouldBe(null);
+            }
+            else
+            {
+                StateObject.SelectToken(outputPath)!.ToString().ShouldBe(outputValue.ToString());
+            }
         }
     }
 
     public void ClearKey(string key)
     {
-        var obj = StateObject;
-        obj.Remove(key);
-        StateObject = obj;
-        ReadKey(key).ShouldBe(null);
+        lock (this)
+        {
+            var obj = StateObject;
+            obj.Remove(key);
+            StateObject = obj;
+            ReadKey(key).ShouldBe(null);
+        }
     }
 
     public JToken? ReadKey(string key)
